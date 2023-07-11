@@ -1,0 +1,31 @@
+{
+  "name": "simple-nbodysim-back",
+  "version": "0.0.1",
+  "description": "backend of the N body simulation that will manage real time simulation and sharing of position to all users",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "build:ui": "rm -rf dist && cd ../frontend/ && npm run build && cp -r dist ../backend",
+    "start": "node index.js",
+    "dev": "nodemon index.js",
+    "test": "echo \\\"Error: no test specified\\\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Tetris973/simple-NBodySim.git"
+  },
+  "author": "Cédric OLENDER",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Tetris973/simple-NBodySim/issues"
+  },
+  "homepage": "https://github.com/Tetris973/simple-NBodySim#readme",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
+  }
+}
