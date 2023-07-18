@@ -1,0 +1,20 @@
+# fly.toml app configuration file generated for simple-nbodysim on 2023-07-18T22:22:21+02:00
+#
+# See https://fly.io/docs/reference/configuration/ for information about how to use this file.
+#
+
+app = "simple-nbodysim"
+primary_region = "cdg"
+
+[env]
+  PORT = "8080" # add this
+
+[experimental]
+auto_rollback = true
+
+[http_service]
+  internal_port = 8080
+  force_https = true
+  auto_stop_machines = true
+  auto_start_machines = true
+  min_machines_running = 0
