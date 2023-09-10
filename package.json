@@ -1,0 +1,16 @@
+{
+  "name": "simple-nbodysim",
+  "version": "0.0.0",
+  "description": "simple n body sim for learning tech",
+  "main": " ",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "prepare": "husky install"
+  },
+  "author": "tetris",
+  "license": "MIT",
+  "devDependencies": {
+    "husky": "^8.0.0",
+    "lint-staged": "^14.0.1"
+  }
+}
