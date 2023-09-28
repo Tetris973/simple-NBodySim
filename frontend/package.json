@@ -6,9 +6,13 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "lint": "eslint src --ext js,jsx --report-unused-disable-directives --max-warnings 0",
+    "lint": "eslint src --ext js,jsx --color --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",
     "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "lint-staged": {
+    "*.js": "eslint --cache --fix",
+    "*.jsx": "eslint --cache --fix"
   },
   "dependencies": {
     "react": "^18.2.0",
