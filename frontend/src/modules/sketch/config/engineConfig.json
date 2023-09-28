@@ -1,0 +1,22 @@
+{
+    "plotter": {
+      "scale": {
+        "x": 3000000000000,
+        "y": 3000000000000
+      },
+      "squareByX": true,
+      "backgroundColor": {
+        "draw": true,
+        "color": {
+          "r": 0,
+          "g": 0,
+          "b": 0
+        }
+      }
+    },
+    "runner": {
+      "simulationSpeed": 5000000,
+      "movable": true
+    }
+  }
+  

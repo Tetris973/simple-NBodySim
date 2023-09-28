@@ -1,0 +1,93 @@
+[
+    {
+      "mass": 3.3e23,
+      "initialX": 0,
+      "initialY": 4.7e10,
+      "initialVelocityX": 5.9e4,
+      "initialVelocityY": 0,
+      "color": [63, 63, 63],
+      "name": "Mercure",
+      "radius": 2
+    },
+    {
+      "mass": 4.9e24,
+      "initialX": 0,
+      "initialY": 1.1e11,
+      "initialVelocityX": 3.5e4,
+      "initialVelocityY": 0,
+      "color": [230, 230, 230],
+      "name": "Venus",
+      "radius": 3
+    },
+    {
+      "mass": 6.0e24,
+      "initialX": 0,
+      "initialY": 1.5e11,
+      "initialVelocityX": 3.0e4,
+      "initialVelocityY": 0,
+      "color": [47, 106, 105],
+      "name": "Terre",
+      "radius": 3
+    },
+    {
+      "mass": 6.4e23,
+      "initialX": 0,
+      "initialY": 2.1e11,
+      "initialVelocityX": 2.6e4,
+      "initialVelocityY": 0,
+      "color": [153, 61, 0],
+      "name": "Mars",
+      "radius": 2
+    },
+    {
+      "mass": 1.9e27,
+      "initialX": 0,
+      "initialY": 7.4e11,
+      "initialVelocityX": 1.3e4,
+      "initialVelocityY": 0,
+      "color": [176, 127, 53],
+      "name": "Jupiter",
+      "radius": 24
+    },
+    {
+      "mass": 5.6e26,
+      "initialX": 0,
+      "initialY": 1.3e12,
+      "initialVelocityX": 1.0e4,
+      "initialVelocityY": 0,
+      "color": [176, 143, 54],
+      "name": "Saturne",
+      "radius": 21
+    },
+    {
+      "mass": 8.7e25,
+      "initialX": 0,
+      "initialY": 2.7e12,
+      "initialVelocityX": 7.1e3,
+      "initialVelocityY": 0,
+      "color": [85, 128, 170],
+      "name": "Uranus",
+      "radius": 7
+    },
+    {
+      "mass": 1.0e26,
+      "initialX": 0,
+      "initialY": 4.4e12,
+      "initialVelocityX": 5.5e3,
+      "initialVelocityY": 0,
+      "color": [54, 104, 150],
+      "name": "Neptune",
+      "radius": 7
+    },
+    {
+      "mass": 1.989e30,
+      "initialX": 0,
+      "initialY": 0,
+      "initialVelocityX": 0,
+      "initialVelocityY": 0,
+      "color": [246, 244, 129],
+      "name": "Soleil",
+      "radius": 6
+    }
+  ]
+  
