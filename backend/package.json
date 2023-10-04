@@ -11,7 +11,12 @@
     "logs:prod": "fly logs",
     "start": "node index.js",
     "dev": "nodemon index.js",
-    "test": "echo \\\"Error: no test specified\\\" && exit 1"
+    "test": "echo \\\"Error: no test specified\\\" && exit 1",
+    "lint": "eslint src --ext js,jsx --color --report-unused-disable-directives --max-warnings 0"
+  },
+  "lint-staged": {
+    "*.js": "eslint --cache --fix",
+    "*.jsx": "eslint --cache --fix"
   },
   "repository": {
     "type": "git",
