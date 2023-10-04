@@ -1,6 +1,7 @@
 import express from 'express'
 import cors from 'cors'
 import dotenv from 'dotenv'
+import { loadNBodyFromJSON } from './src/services/NbodyLoader.js'
 
 const app = express()
 // Serve static files from the React app, the index.html file
@@ -20,3 +21,6 @@ const port = process.env.PORT
 app.listen(port, () => {
   console.log('Server listening on port', port)
 })
+
+const planets = await loadNBodyFromJSON('./src/data/planetsConfig.json')
+console.log(planets)

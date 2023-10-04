@@ -1,0 +1,33 @@
+# Dependencies
+node_modules
+
+# Production build
+dist
+
+# Environment variables
+.env
+
+# Logs
+npm-debug.log
+yarn-error.log
+
+# IDEs and editors
+.idea/
+.vscode/
+
+# macOS
+.DS_Store
+
+# Temporary files
+tmp/
+temp/
+
+# System files
+.DS_Store
+Thumbs.db
+
+# Ignore fly.toml file
+#fly.toml
+
+# Ignore package-lock.json
+package-lock.json
