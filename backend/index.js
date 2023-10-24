@@ -1,7 +1,7 @@
 import express from 'express'
 import cors from 'cors'
 import dotenv from 'dotenv'
-import { loadNBodyFromJSON } from './src/services/NbodyLoader.js'
+import { loadNBodyFromJSON } from './services/nBodyLoader.js'
 
 const app = express()
 // Serve static files from the React app, the index.html file
