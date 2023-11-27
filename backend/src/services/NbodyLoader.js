@@ -1,4 +1,4 @@
-import NBody from '../models/NBody.js'
+import { NBody } from '../models/NBody.js'
 import fs from 'fs/promises'
 
 /**
@@ -6,22 +6,19 @@ import fs from 'fs/promises'
  * @param {string} jsonPath - The path to the JSON file.
  * @returns {Promise<NBody[]>} A promise that resolves to an array of NBody objects.
  */
-export async function loadNBodyFromJSON(jsonPath) {
+async function loadNBodyFromJSON(jsonPath) {
   const planetsData = await loadAndCheckPlanetsJSON(jsonPath)
 
   return planetsData.map((planetData) => {
-    const nbody = NBody(0, 0, 0, 0, 'default')
-
-    nbody.mass = planetData.mass
-    nbody.position = {
+    const nbodyParams = {
+      name: planetData.name,
+      mass: planetData.mass,
       x: planetData.initialX,
       y: planetData.initialY,
+      vx: planetData.initialVelocityX,
+      vy: planetData.initialVelocityY,
     }
-    nbody.velocity = {
-      x: planetData.initialVelocityX,
-      y: planetData.initialVelocityY,
-    }
-    nbody.name = planetData.name
+    const nbody = NBody(nbodyParams)
 
     return nbody
   })
@@ -77,4 +74,4 @@ async function loadAndCheckPlanetsJSON(jsonPath) {
   }
 }
 
-export default loadNBodyFromJSON
+export { loadNBodyFromJSON }

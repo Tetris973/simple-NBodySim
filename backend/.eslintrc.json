@@ -3,9 +3,24 @@
         "node": true,
         "es2021": true
     },
+    "overrides": [
+        {
+            "files": [
+                "**/*.test.js",
+                "**/__tests__/**/*.js"
+            ],
+            "env": {
+                "jest": true
+            }
+        }
+    ],
+    "plugins": [
+        "jest"
+    ],
     "extends": [
         "eslint:recommended",
-        "plugin:prettier/recommended"
+        "plugin:prettier/recommended",
+        "plugin:jest/recommended"
     ],
     "parserOptions": {
         "ecmaVersion": "latest",
@@ -14,7 +29,10 @@
     "rules": {
         "indent": [
             "error",
-            2
+            2,
+            {
+                "SwitchCase": 1
+            }
         ],
         "linebreak-style": [
             "error",

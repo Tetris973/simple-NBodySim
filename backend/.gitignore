@@ -31,3 +31,6 @@ Thumbs.db
 
 # Ignore package-lock.json
 package-lock.json
+
+# Ignore eslint cache
+.eslintcache
