@@ -1,4 +1,4 @@
-import { Task } from '../../../Task.js'
+import { Task } from '#src/engine/Task.js'
 import { exampleTask } from './exampleTask.js'
 import { nBodyVerlet } from './nBodyVerlet.js'
 

@@ -1,4 +1,4 @@
-import { ItemMetadata } from '../Utilities/ItemMetadata.js'
+import { ItemMetadata } from '#src/utils/ItemMetadata.js'
 
 /**
  * Represents a generic task in a system.

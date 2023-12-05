@@ -1,4 +1,4 @@
-import { BoundedQueue } from '../utilities/BoundedQueue.js'
+import { BoundedQueue } from '#src/utils/BoundedQueue.js'
 
 /**
  * Creates a new instance of TimingManager. This manager is responsible for tracking
@@ -22,8 +22,8 @@ function TimingManager() {
    * @type {BoundedQueue}
    * @private
    */
-  let _tickDurationsWindow = BoundedQueue(1000, (queue) => {
-    return queue.reduce((acc, duration) => acc + duration, 0)
+  let _tickDurationsWindow = BoundedQueue(1000, (items) => {
+    return items.reduce((acc, duration) => acc + duration, 0)
   })
 
   /****************************************
@@ -63,7 +63,7 @@ function TimingManager() {
       throw new Error('You must call init before calling recordTick.')
     }
     const tickDuration = currentTime - _lastRun
-    _tickDurationsWindow.add(tickDuration)
+    _tickDurationsWindow.enqueue(tickDuration)
     _lastRun = currentTime
     _ticks++
   }
@@ -92,7 +92,7 @@ function TimingManager() {
    */
   Object.defineProperty(manager, 'meanTickTime', {
     get: () => {
-      const durations = _tickDurationsWindow._queue
+      const durations = _tickDurationsWindow.items
       const total = durations.reduce((acc, duration) => acc + duration, 0)
       return durations.length > 0 ? total / durations.length : 0
     },
@@ -108,8 +108,8 @@ function TimingManager() {
    */
   Object.defineProperty(manager, 'lastTickTime', {
     get: () => {
-      const durations = _tickDurationsWindow._queue
-      return durations.length > 0 ? durations[0] : 0
+      const lastTime = _tickDurationsWindow.last()
+      return lastTime !== null ? lastTime : 0
     },
     enumerable: true,
   })
@@ -122,8 +122,8 @@ function TimingManager() {
    */
   Object.defineProperty(manager, 'tickPerSecond', {
     get: () => {
-      const durations = _tickDurationsWindow._queue
-      return durations.length > 0 ? durations.length : 0
+      const nbTicks = _tickDurationsWindow.length
+      return nbTicks > 0 ? nbTicks : 0
     },
     enumerable: true,
   })

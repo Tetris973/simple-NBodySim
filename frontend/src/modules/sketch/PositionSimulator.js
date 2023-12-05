@@ -27,21 +27,36 @@ PositionSimulator.prototype.setPositionsData = function (planetName, positions) 
   this.positionsData[planetName] = positions
 }
 
+import geckos from '@geckos.io/client'
+// Create a channel to connect to the server
+
+const channel = geckos({
+  port: window.location.hostname === 'localhost' ? 3000 : null,
+})
+
 /**
  * Starts the loop that updates positions.
  * @param {number} timesPerSecond - The number of times the positions should be updated per second.
  */
-PositionSimulator.prototype.startLoop = function (timesPerSecond) {
-  const interval = 1000 / timesPerSecond
-
-  setInterval(() => {
-    for (const name in this.planets) {
-      if (this.positionsData[name] && this.positionsData[name].length > 0) {
-        const position = this.positionsData[name].shift()
-        this.planets[name](position.x, position.y)
-      }
+PositionSimulator.prototype.startLoop = function () {
+  channel.onConnect((error) => {
+    if (error) {
+      console.error(error.message)
+      return
     }
-  }, interval)
+
+    // Log on successful connection
+    console.log('You are connected to the server!')
+
+    // Listening for messages from the server
+    channel.on('simulationData', (data) => {
+      data.map((obj) => {
+        const id = Object.keys(obj)[0] // Get the id (planet name)
+        const pos = obj[id] // Get the position object
+        this.planets[id](pos.x, pos.y)
+      })
+    })
+  })
 }
 
 export default PositionSimulator

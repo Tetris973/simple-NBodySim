@@ -15,7 +15,8 @@
         }
     ],
     "plugins": [
-        "jest"
+        "jest",
+        "import"
     ],
     "extends": [
         "eslint:recommended",
@@ -27,6 +28,7 @@
         "sourceType": "module"
     },
     "rules": {
+        "import/no-relative-parent-imports": "error",
         "indent": [
             "error",
             2,

@@ -2,7 +2,7 @@ import { parentPort } from 'worker_threads'
 import { SimpleEngine } from './SimpleEngine.js'
 import { TimingManager } from './TimingManager.js'
 import { LoopManager } from './LoopManager.js'
-import { StateManager } from '../Utilities/StateManager.js'
+import { StateManager } from '#src/utils/StateManager.js'
 
 /**
  * @typedef {Object} CommandResponse
@@ -87,7 +87,9 @@ const loopAction = () => {
     return
   }
   timingManager.recordTick(Date.now())
-  engine.run(deltaTime)
+  // TODO: For testing, to be removed !!!
+  const speedFactor = 2000
+  engine.run(deltaTime * speedFactor)
 
   // update client with computed data
   parentPort.postMessage({ action: 'engineData', data: engine.data })

@@ -24,6 +24,7 @@ function CircleRenderer(getPosition, color, r) {
  */
 CircleRenderer.prototype.draw = function (drawer) {
   const position = this.getPosition()
+  if (!position.x && !position.y) return
   drawer
     .noStroke()
     .fill(this.color[0], this.color[1], this.color[2])

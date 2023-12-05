@@ -55,7 +55,7 @@ const SimpleEngineController = async (worker) => {
   let _isTerminated = false
 
   /****************************************
-   *         PRIVATE FUNCTIONS           *
+   *         PRIVATE FUNCTIONS            *
    ****************************************/
 
   /**

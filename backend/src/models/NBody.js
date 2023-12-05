@@ -1,4 +1,4 @@
-import { ItemMetadata } from '../Utilities/ItemMetadata.js'
+import { ItemMetadata } from '#src/utils/ItemMetadata.js'
 
 /**
  * Creates an NBody particle and initializes its properties in the provided data array.
