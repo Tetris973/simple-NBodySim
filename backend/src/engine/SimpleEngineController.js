@@ -81,7 +81,7 @@ const SimpleEngineController = async (worker) => {
   /****************************************
    *          PUBLIC FUNCTIONS           *
    ****************************************/
-  const obj = {}
+  const controller = {}
 
   /**
    * Initializes the engine.
@@ -89,7 +89,7 @@ const SimpleEngineController = async (worker) => {
    * @returns {Promise<void>} A promise that resolves when the engine has been initialized.
    * @throws {Error} If the worker is terminated or responds with an error.
    */
-  obj.init = () => sendToWorker('init')
+  controller.init = () => sendToWorker('init')
 
   /**
    * Validates the engine's current state.
@@ -97,7 +97,7 @@ const SimpleEngineController = async (worker) => {
    * @returns {Promise<void>} A promise that resolves when the engine's state has been validated.
    * @throws {Error} If the worker is terminated or responds with an error.
    */
-  obj.validate = () => sendToWorker('validate')
+  controller.validate = () => sendToWorker('validate')
 
   /**
    * Starts the engine loop.
@@ -105,7 +105,7 @@ const SimpleEngineController = async (worker) => {
    * @returns {Promise<void>} A promise that resolves when the engine loop has started.
    * @throws {Error} If the worker is terminated or responds with an error.
    */
-  obj.start = () => sendToWorker('start')
+  controller.start = () => sendToWorker('start')
 
   /**
    * Stops the engine loop.
@@ -113,7 +113,7 @@ const SimpleEngineController = async (worker) => {
    * @returns {Promise<void>} A promise that resolves when the engine loop has stopped.
    * @throws {Error} If the worker is terminated or responds with an error.
    */
-  obj.stop = () => sendToWorker('stop')
+  controller.stop = () => sendToWorker('stop')
 
   /**
    * Sets a task in the engine.
@@ -122,16 +122,26 @@ const SimpleEngineController = async (worker) => {
    * @returns {Promise<void>} A promise that resolves when the task has been set in the engine.
    * @throws {Error} If the worker is terminated or responds with an error.
    */
-  obj.setTask = (taskId) => sendToWorker('setTask', taskId)
+  controller.setTask = (taskId) => sendToWorker('setTask', taskId)
 
   /**
-   * Sets entities in the engine. This method is asynchronous and returns a promise that resolves with the entities that were set.
+   * Sets entities in the engine.
    * @async
    * @param {Object[]} entities - Array of entities to set in the engine.
    * @returns {Promise<Object[]>} A promise resolving with the array of entities that were set in the engine.
    * @throws {Error} If the worker is terminated or responds with an error.
    */
-  obj.setEntities = (entities) => sendToWorker('setEntities', entities)
+  controller.setEntities = (entities) => sendToWorker('setEntities', entities)
+
+  /**
+   * Sets the time scale factor of the engine.
+   * @async
+   * @param {*} timeScaleFactor - The time scale factor to set.
+   * @returns {Promise<void>} A promise that resolves when the time scale factor has been set.
+   * @throws {Error} If the worker is terminated or responds with an error.
+   */
+  controller.setTimeScaleFactor = (timeScaleFactor) =>
+    sendToWorker('setTimeScaleFactor', timeScaleFactor)
 
   /**
    * Retrieves information about the engine's current state and performance metrics.
@@ -139,29 +149,33 @@ const SimpleEngineController = async (worker) => {
    * @returns {Promise<EngineInfo>} A promise that resolves to an object containing detailed engine information.
    * @throws {Error} If the worker is terminated or responds with an error.
    */
-  obj.getEngineInfos = () => sendToWorker('getEngineInfos')
+  controller.getEngineInfos = () => sendToWorker('getEngineInfos')
 
   /**
    * @typedef {Object} EngineInfo
-   * @property {number} meanTickTime - The average time between ticks in the engine.
    * @property {string} currentState - A description of the current state of the engine.
    * @property {number} lastTickTime - The time taken for the last tick in the engine.
+   * @property {number} meanTickTime - The average time between ticks in the engine.
    * @property {number} tickPerSecond - The number of ticks occurring per second in the engine.
    * @property {number} tickCount - The total number of ticks that have occurred in the engine so far.
+   * @property {number} updateRate - The rate at which the engine is updating.
+   * @property {number} updatePerSecond - The number of updates occurring per second in the engine.
+   * @property {number} meanUpdateTime - The average time taken to process an update in the engine.
+   * @property {number} timeScaleFactor - The time scale factor at which the engine is running.
    */
 
   /**
    * Registers a callback to handle engine data.
    * @param {function} callback - The callback function to handle engine data.
    */
-  obj.onEngineData = (callback) => {
+  controller.onEngineData = (callback) => {
     _engineDataCallback = callback
   }
 
   /**
    * Terminates the worker thread.
    */
-  obj.terminate = () => {
+  controller.terminate = () => {
     _isTerminated = true
     _worker.terminate()
   }
@@ -177,12 +191,12 @@ const SimpleEngineController = async (worker) => {
    * @readonly
    * @default false
    */
-  Object.defineProperty(obj, 'isTerminated', {
+  Object.defineProperty(controller, 'isTerminated', {
     get: () => _isTerminated,
     enumerable: true,
   })
 
-  return obj
+  return controller
 }
 
 /****************************************

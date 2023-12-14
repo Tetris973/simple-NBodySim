@@ -82,17 +82,18 @@ let loopManager = null
  * Function to be executed in each loop iteration.
  */
 const loopAction = () => {
-  let deltaTime = timingManager.calculateDeltaTime(Date.now())
-  if (deltaTime === 0) {
-    return
+  while (!timingManager.isUpdateNeeded(performance.now())) {
+    let deltaTime = timingManager.calculateDeltaTime(performance.now())
+    if (deltaTime === 0) {
+      return
+    }
+    timingManager.recordTick(performance.now())
+    engine.run(deltaTime)
   }
-  timingManager.recordTick(Date.now())
-  // TODO: For testing, to be removed !!!
-  const speedFactor = 2000
-  engine.run(deltaTime * speedFactor)
 
   // update client with computed data
   parentPort.postMessage({ action: 'engineData', data: engine.data })
+  timingManager.recordUpdate(performance.now())
 }
 
 /**
@@ -149,7 +150,7 @@ const commandHandlers = {
    */
   start: () => {
     isReady()
-    timingManager.init(Date.now()) // important to call this before starting the loop
+    timingManager.init(performance.now()) // important to call this before starting the loop
     loopManager.start()
     return { action: 'start', status: 'success' }
   },
@@ -190,6 +191,18 @@ const commandHandlers = {
   },
 
   /**
+   * Sets the time scale factor.
+   * @param {*} timeScaleFactor - The time scale factor to set.
+   * @returns {CommandResponse} Response object indicating the result of the command.
+   * @throws {Error} If the state is not INITIALIZED or READY.
+   */
+  setTimeScaleFactor: (timeScaleFactor) => {
+    isInitializedOrReady()
+    timingManager.timeScaleFactor = timeScaleFactor
+    return { action: 'setTimeScaleFactor', status: 'success' }
+  },
+
+  /**
    * Retrieves information about the engine.
    * @returns {CommandResponse} Response object containing engine information.
    * @throws {Error} If the state is not INITIALIZED or READY.
@@ -200,11 +213,15 @@ const commandHandlers = {
       action: 'getEngineInfos',
       status: 'success',
       data: {
-        meanTickTime: timingManager.meanTickTime,
         currentState: stateManager.getCurrentState().description,
         lastTickTime: timingManager.lastTickTime,
+        meanTickTime: timingManager.meanTickTime,
         tickPerSecond: timingManager.tickPerSecond,
         tickCount: timingManager.ticks,
+        updateRate: timingManager.updateRate,
+        updatePerSecond: timingManager.updatePerSecond,
+        meanUpdateTime: timingManager.meanUpdateTime,
+        timeScaleFactor: timingManager.timeScaleFactor,
       },
     }
   },
