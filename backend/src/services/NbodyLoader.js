@@ -1,4 +1,4 @@
-import { NBody } from '../models/NBody.js'
+import { NBody } from '#src/models/NBody.js'
 import fs from 'fs/promises'
 
 /**

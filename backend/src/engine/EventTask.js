@@ -1,6 +1,6 @@
 // TODO: verify jsdoc, add tests, verify overall functionality
 import { Task } from './Task.js'
-import { Counter } from '../Utilities/Counter.js'
+import { Counter } from '#src/utils/Counter.js'
 
 /**
  * @typedef {Object} EventTask
@@ -24,7 +24,7 @@ import { Counter } from '../Utilities/Counter.js'
  */
 function EventTask(id, conditionFunction, callbacks) {
   /****************************************
-   *         PRIVATE VARIABLES           *
+   *         PRIVATE VARIABLES            *
    ****************************************/
   /**
    * The task that contains the condition function.

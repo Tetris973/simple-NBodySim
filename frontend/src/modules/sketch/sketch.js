@@ -4,7 +4,7 @@ import planetsConfig from './config/planetsConfig.json'
 import engineConfig from './config/engineConfig.json'
 import PathRenderer from './pathRenderer'
 import CircleRenderer from './circleRenderer'
-import PositionSimulator, { loadPositionsData } from './PositionSimulator'
+import PositionSimulator from './PositionSimulator'
 
 /**
  * Creates an array of NBody instances based on the provided configuration.
@@ -22,7 +22,7 @@ import PositionSimulator, { loadPositionsData } from './PositionSimulator'
 function createPlanetsFromConfig(configs) {
   return configs.map((planet) => {
     const nbody = NBody(planet.mass, planet.name)
-    nbody.setPosition(planet.initialX, planet.initialY)
+    nbody.setPosition(null, null)
 
     // Create PathRenderer for the planet
     const pathRenderer = PathRenderer(() => nbody.getPosition(), planet.color)
@@ -68,6 +68,33 @@ function getEngineConfigurator(config) {
  * @param {Object} simulator - The simulator instance.
  */
 const runSimulator = async (simulator) => {
+  // dummy fps object
+  const Fps = () => {
+    // setTimeOut to update the fps every second
+    setInterval(() => {
+      update = true
+    }, 200)
+
+    let currentFps = 0
+    let update = true
+
+    /* eslint-disable */
+    return {
+      draw: () => {
+        fill(255)
+        stroke(0)
+        text('FPS: ' + currentFps.toFixed(2), 50, 50)
+
+        if (!update) return
+        currentFps = frameRate()
+        update = false
+      },
+      update: () => {},
+    }
+    /* eslint-enable */
+  }
+
+  simulator.addObjects(Fps())
   const positionSimulator = new PositionSimulator()
 
   simulator.setEngineConfig(getEngineConfigurator(engineConfig))
@@ -78,8 +105,8 @@ const runSimulator = async (simulator) => {
     positionSimulator.registerPlanet(planet.name, planet.setPosition.bind(planet))
 
     // Load positions data using the separated function and then set it in the simulator
-    const positionsData = await loadPositionsData(planet.name)
-    positionSimulator.setPositionsData(planet.name, positionsData)
+    // const positionsData = await loadPositionsData(planet.name)
+    // positionSimulator.setPositionsData(planet.name, positionsData)
   }
 
   positionSimulator.startLoop(120)

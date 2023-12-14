@@ -10,7 +10,7 @@
  * @param {number} [pathLength=500] - The maximum length of the path to be stored and displayed.
  * @returns {PathRenderer} The created PathRenderer object.
  */
-function PathRenderer(getPosition, color, showPath = true, pathLength = 500) {
+function PathRenderer(getPosition, color, showPath = true, pathLength = 1000) {
   const obj = Object.create(PathRenderer.prototype)
   obj.getPosition = getPosition
   obj.color = color
@@ -25,6 +25,7 @@ function PathRenderer(getPosition, color, showPath = true, pathLength = 500) {
  */
 PathRenderer.prototype.updatePath = function () {
   const position = this.getPosition()
+  if (!position.x && !position.y) return
 
   if (this.path.length === 0 || this.shouldAddPosition(position)) {
     this.path.push([position.x, position.y])
@@ -90,7 +91,7 @@ PathRenderer.prototype.draw = function (drawer) {
 
   for (let i = 1; i < this.path.length; i++) {
     drawer
-      .strokeWeight(1)
+      .strokeWeight(2)
       .line(this.path[i - 1][0], this.path[i - 1][1], this.path[i][0], this.path[i][1])
   }
 }

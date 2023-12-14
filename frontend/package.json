@@ -15,6 +15,8 @@
     "*.jsx": "eslint --cache --fix"
   },
   "dependencies": {
+    "@geckos.io/client": "^2.3.2",
+    "p5-sketch-editor": "file:./src/libs/p5-sketch-editor-1.0.0.tgz",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
   },
