@@ -56,4 +56,15 @@ router.post('/setTimeScaleFactor', (req, res) => {
   }
 })
 
+router.post('/setDt', (req, res) => {
+  try {
+    const roomContext = getRoomContext()
+    const { dt } = req.body
+    roomContext.engineController.setDt(dt)
+    res.send(`Delta time set to ${dt} seconds`)
+  } catch (error) {
+    res.status(500).send(`Error setting delta time: ${error.message}`)
+  }
+})
+
 export { router as expressSimRoutes }

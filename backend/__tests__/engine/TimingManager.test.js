@@ -25,13 +25,14 @@ describe('TimingManager Tests', () => {
       // INIT
       const initialTime = Date.now()
       timingManager.init(initialTime)
+      timingManager.dt = null // default dt is null
       const laterTime = initialTime + 10
 
       // RUN
       const deltaTime = timingManager.calculateDeltaTime(laterTime)
 
       // CHECK RESULTS
-      expect(deltaTime).toBe(10)
+      expect(deltaTime).toBe(10 / 1000)
     })
 
     test('should return maxDeltaTime when laterTime if over upper bound', () => {
@@ -44,7 +45,22 @@ describe('TimingManager Tests', () => {
       const deltaTime = timingManager.calculateDeltaTime(laterTime)
 
       // CHECK RESULTS
-      expect(deltaTime).toBe(maxDeltaTime)
+      expect(deltaTime).toBe(maxDeltaTime / 1000)
+    })
+
+    test('should return fixed dt when dt is set', () => {
+      // INIT
+      const initialTime = Date.now()
+      timingManager.init(initialTime)
+      const laterTime = initialTime + 30
+      const fixedDeltaTime = 10
+      timingManager.dt = fixedDeltaTime
+
+      // RUN
+      const deltaTime = timingManager.calculateDeltaTime(laterTime)
+
+      // CHECK RESULTS
+      expect(deltaTime).toBe(fixedDeltaTime)
     })
 
     test('should throw error when calculating delta time with input time before last run', () => {
@@ -360,7 +376,7 @@ describe('TimingManager Tests', () => {
       const actualDeltaTime = timingManager.calculateDeltaTime(time + deltaTime)
 
       // CHECK RESULTS
-      expect(actualDeltaTime).toBe(deltaTime * timeScaleFactor)
+      expect(actualDeltaTime).toBe((deltaTime * timeScaleFactor) / 1000)
     })
     test('should throw error when setting time scale factor inferior to 1', () => {
       // INIT
@@ -370,6 +386,27 @@ describe('TimingManager Tests', () => {
       expect(() => {
         timingManager.timeScaleFactor = timeScaleFactor
       }).toThrow('Time scale factor must be greater than or equal to 1.')
+    })
+  })
+
+  describe('dt property', () => {
+    test('should return null by default', () => {
+      // INIT
+
+      // RUN
+      const dt = timingManager.dt
+
+      // CHECK RESULTS
+      expect(dt).toBeNull()
+    })
+    test('should throw error when setting dt inferior to 1', () => {
+      // INIT
+      const dt = 0
+
+      // ERROR CHECK
+      expect(() => {
+        timingManager.dt = dt
+      }).toThrow('dt must be greater than 0.')
     })
   })
 })

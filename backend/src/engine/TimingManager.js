@@ -10,9 +10,34 @@ function TimingManager() {
   /****************************************
    *         PRIVATE VARIABLES           *
    ****************************************/
+  /**
+   * The timestamp of the last run.
+   */
   let _lastRun = null
+
+  /**
+   * The number of ticks that have been processed by the manager.
+   */
   let _ticks = 0
+
+  /**
+   * The time scale factor at which dt is scaled.
+   */
   let _timeScaleFactor = 1
+
+  /**
+   * The delta time in milliseconds at which each tick is processed.
+   * @type {number}
+   * @default null - Each tick is processed with the last real elapsed delta time.
+   */
+  let _dt = null
+
+  /**
+   * The maximum delta time in milliseconds that can be used to process a tick.
+   * Used when dt is computed with real elapsed time.
+   * @type {number}
+   * @default 1/30 * 1000
+   */
   const MAX_DELTA_TIME = (1 / 30) * 1000 // Max delta time in milliseconds
 
   /**
@@ -67,20 +92,24 @@ function TimingManager() {
   }
 
   /**
-   * Calculates the delta time since the last run constrained by the maximum delta time.
+   * Calculates the delta time since the last run constrained by the maximum delta time and scaled by the time scale factor.
    * Return 0 if recordTick has not been called yet once.
+   * If dt is set to a fixed value, it returns this value.
    *
    * @param {number} currentTime - The current timestamp in milliseconds.
-   * @returns {number} The calculated delta time in milliseconds. Returns if recordTick has not been called yet once.
+   * @returns {number} The calculated delta time in seconds. Returns 0 if recordTick has not been called yet once.
    */
   manager.calculateDeltaTime = (currentTime) => {
     validateTimeInput(currentTime, _lastRun)
     if (_lastRun === null) {
       return 0 // No delta time on first call
     }
+    if (_dt !== null) {
+      return _dt * _timeScaleFactor
+    }
     let dt = currentTime - _lastRun
     dt = Math.min(dt, MAX_DELTA_TIME)
-    return dt * _timeScaleFactor
+    return (dt * _timeScaleFactor) / 1000 // Convert to seconds
   }
 
   /**
@@ -244,6 +273,25 @@ function TimingManager() {
         throw new Error('Time scale factor must be greater than or equal to 1.')
       }
       _timeScaleFactor = value
+    },
+    enumerable: true,
+  })
+
+  /**
+   * The delta time in seconds at which each tick is processed.
+   * @property {number} dt
+   * @name TimingManager#dt
+   * @type {number}
+   * @default null - Each tick is processed with the last real elapsed delta time.
+   * @description
+   */
+  Object.defineProperty(manager, 'dt', {
+    get: () => _dt,
+    set: (value) => {
+      if (value !== null && value <= 0) {
+        throw new Error('dt must be greater than 0.')
+      }
+      _dt = value
     },
     enumerable: true,
   })

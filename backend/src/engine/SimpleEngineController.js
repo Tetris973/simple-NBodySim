@@ -139,9 +139,20 @@ const SimpleEngineController = async (worker) => {
    * @param {*} timeScaleFactor - The time scale factor to set.
    * @returns {Promise<void>} A promise that resolves when the time scale factor has been set.
    * @throws {Error} If the worker is terminated or responds with an error.
+   * @throws {Error} If the time scale factor is not a positive number.
    */
   controller.setTimeScaleFactor = (timeScaleFactor) =>
     sendToWorker('setTimeScaleFactor', timeScaleFactor)
+
+  /**
+   * Sets the delta time of the engine.
+   * @async
+   * @param {*} dt - The delta time to set in seconds.
+   * @returns {Promise<void>} A promise that resolves when the delta time has been set.
+   * @throws {Error} If the worker is terminated or responds with an error.
+   * @throws {Error} If the delta time is not a positive number.
+   */
+  controller.setDt = (dt) => sendToWorker('setDt', dt)
 
   /**
    * Retrieves information about the engine's current state and performance metrics.
@@ -162,6 +173,7 @@ const SimpleEngineController = async (worker) => {
    * @property {number} updatePerSecond - The number of updates occurring per second in the engine.
    * @property {number} meanUpdateTime - The average time taken to process an update in the engine.
    * @property {number} timeScaleFactor - The time scale factor at which the engine is running.
+   * @property {number} dt - The delta time at which each tick is processed.
    */
 
   /**
