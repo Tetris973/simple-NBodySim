@@ -19,7 +19,8 @@ async function setuptEngine(sharedQueue) {
   await control.getEngineInfos()
   await control.setEntities(entities)
   await control.setTask('nBodyVerlet')
-  await control.setTimeScaleFactor(5000)
+  await control.setTimeScaleFactor(200000)
+  //await control.setDt(1)
   await control.validate()
   return control
 }

@@ -203,6 +203,19 @@ const commandHandlers = {
   },
 
   /**
+   * Sets the delta time.
+   * @param {*} dt - The delta time to set.
+   * @returns {CommandResponse} Response object indicating the result of the command.
+   * @throws {Error} If the state is not INITIALIZED or READY.
+   * @throws {Error} If the delta time is not a positive number.
+   */
+  setDt: (dt) => {
+    isInitializedOrReady()
+    timingManager.dt = dt
+    return { action: 'setDt', status: 'success' }
+  },
+
+  /**
    * Retrieves information about the engine.
    * @returns {CommandResponse} Response object containing engine information.
    * @throws {Error} If the state is not INITIALIZED or READY.
@@ -222,6 +235,7 @@ const commandHandlers = {
         updatePerSecond: timingManager.updatePerSecond,
         meanUpdateTime: timingManager.meanUpdateTime,
         timeScaleFactor: timingManager.timeScaleFactor,
+        dt: timingManager.dt,
       },
     }
   },

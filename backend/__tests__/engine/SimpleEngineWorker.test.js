@@ -255,6 +255,55 @@ describe('SimpleEngineWorker tests', () => {
     })
   })
 
+  describe('setDt command', () => {
+    test('should correctly set the delta time', async () => {
+      // INIT
+      await sendCommand('init')
+      const dt = 2
+
+      // RUN
+      const result = await sendCommand('setDt', dt)
+
+      // CHECK RESULTS
+      expect(result).toEqual({
+        action: 'setDt',
+        status: 'success',
+        data: null,
+      })
+    })
+
+    test('should throw error for engine not initialized', async () => {
+      // INIT
+      const dt = 2
+
+      // RUN
+      const result = await sendCommand('setDt', dt)
+
+      // CHECK RESULTS
+      expect(result).toEqual({
+        action: 'setDt',
+        error: 'You can not execute this command in the current state: uninitialized',
+        status: 'error',
+      })
+    })
+
+    test('should throw error for delta time inferior or equal to 0', async () => {
+      // INIT
+      await sendCommand('init')
+      const dt = 0
+
+      // RUN
+      const result = await sendCommand('setDt', dt)
+
+      // CHECK RESULTS
+      expect(result).toEqual({
+        action: 'setDt',
+        error: 'dt must be greater than 0.',
+        status: 'error',
+      })
+    })
+  })
+
   describe('start command', () => {
     test('should correctly start the engine', async () => {
       // INIT
@@ -365,13 +414,14 @@ describe('SimpleEngineWorker tests', () => {
         data: {
           currentState: 'initialized',
           lastTickTime: 0,
-          tickPerSecond: 0,
           meanTickTime: 0,
+          tickPerSecond: 0,
           tickCount: 0,
-          timeScaleFactor: 1,
           updateRate: 60,
           updatePerSecond: 0,
           meanUpdateTime: 0,
+          timeScaleFactor: 1,
+          dt: null,
         },
       })
     })
