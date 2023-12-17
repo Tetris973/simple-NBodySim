@@ -24,9 +24,9 @@ const DataSender = (geckosInstance, roomId, sendRate) => {
     if (_transmissionInterval) clearInterval(_transmissionInterval)
 
     _transmissionInterval = setInterval(() => {
-      if (!sender.sharedQueue) throw new Error('Data queue is needed')
-      if (sender.sharedQueue.isEmpty()) return
-      const data = sender.sharedQueue.dequeue()
+      if (!sender.dataQueue) throw new Error('Data queue is needed')
+      if (sender.dataQueue.empty()) return
+      const data = sender.dataQueue.popBack()
       const positions = data.map((planet) => {
         return { [planet.id]: planet.pos }
       })
@@ -83,8 +83,8 @@ const DataSender = (geckosInstance, roomId, sendRate) => {
 
   /**
    * The data queue that the sender uses to retrieve data to send.
-   * @name DataSender#sharedQueue
-   * @type {BoundedQueue}
+   * @name DataSender#dataQueue
+   * @property {BoundedDeque}
    * @description
    * The data queue is a bounded queue that is shared between the sender and the receiver.
    */

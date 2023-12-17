@@ -1,4 +1,4 @@
-import { BoundedQueue } from '#src/utils/BoundedQueue.js'
+import { BoundedDeque, AggregateOperations } from '#src/utils/BoundedDeque.js'
 
 /**
  * Creates a new instance of TimingManager. This manager is responsible for tracking
@@ -12,25 +12,56 @@ function TimingManager() {
    ****************************************/
   let _lastRun = null
   let _ticks = 0
+  let _timeScaleFactor = 1
   const MAX_DELTA_TIME = (1 / 30) * 1000 // Max delta time in milliseconds
+
+  /**
+   * The update rate of the engine in update per seconds.
+   * @type {number}
+   * @private
+   * @default 60
+   * @description
+   * The number of time the engine updates its listeners per seconds with the last computed state.
+   */
+  let _updateRate = 60
+
+  /**
+   * The timestamp of the last update.
+   * @type {number}
+   * @private
+   * @default null
+   */
+  let _lastUpdate = null
 
   /**
    * Window of tick durations used to calculate mean tick time, tick per seconds, ...
    * The bound compute function is the sum of the durations of every tick in the window.
    * The bound is set to 1s.
    *
-   * @type {BoundedQueue}
+   * @type {BoundedDeque}
    * @private
    */
-  let _tickDurationsWindow = BoundedQueue(1000, (items) => {
-    return items.reduce((acc, duration) => acc + duration, 0)
-  })
+  let _tickDurationsWindow = new BoundedDeque(1000, (item) => item, AggregateOperations.addition)
+
+  /**
+   * Window of update durations used to calculate mean update time, update per seconds, ...
+   * The bound compute function is the sum of the durations of every update in the window.
+   * The bound is set to 1s.
+   *
+   * @type {BoundedDeque}
+   * @private
+   */
+  let _updateDurationsWindow = new BoundedDeque(1000, (item) => item, AggregateOperations.addition)
 
   /****************************************
    *          PUBLIC FUNCTIONS            *
    * **************************************/
   const manager = {}
 
+  /**
+   * Initializes the last run time to currentTime.
+   * @param {*} currentTime - The current timestamp in milliseconds.
+   */
   manager.init = (currentTime) => {
     _lastRun = currentTime
   }
@@ -49,7 +80,7 @@ function TimingManager() {
     }
     let dt = currentTime - _lastRun
     dt = Math.min(dt, MAX_DELTA_TIME)
-    return dt
+    return dt * _timeScaleFactor
   }
 
   /**
@@ -63,9 +94,33 @@ function TimingManager() {
       throw new Error('You must call init before calling recordTick.')
     }
     const tickDuration = currentTime - _lastRun
-    _tickDurationsWindow.enqueue(tickDuration)
+    _tickDurationsWindow.pushFront(tickDuration)
     _lastRun = currentTime
     _ticks++
+  }
+
+  /**
+   * Determine if an update is needed based on the current time.
+   * @param {*} currentTime - The current timestamp in milliseconds.
+   * @returns {boolean} True if an update is needed, false otherwise.
+   */
+  manager.isUpdateNeeded = (currentTime) => {
+    validateTimeInput(currentTime, _lastUpdate)
+    if (_lastUpdate === null) {
+      return true
+    }
+    const dt = currentTime - _lastUpdate
+    return dt >= 1000 / _updateRate
+  }
+
+  /**
+   * Records an update.
+   * @param {*} currentTime - The lastUpdate timestamp in milliseconds.
+   */
+  manager.recordUpdate = (currentTime) => {
+    const updateDuration = currentTime - _lastUpdate
+    _updateDurationsWindow.pushFront(updateDuration)
+    _lastUpdate = currentTime
   }
 
   /****************************************
@@ -84,17 +139,15 @@ function TimingManager() {
   })
 
   /**
-   * Mean time taken for recent ticks.
-   * The number of ticks used to calculate the mean is equal to the update frequency.
+   * Mean time taken to process a tick for the last second of ticks.
    * @name TimingManager#meanTickTime
    * @type {number}
    * @readonly
    */
   Object.defineProperty(manager, 'meanTickTime', {
     get: () => {
-      const durations = _tickDurationsWindow.items
-      const total = durations.reduce((acc, duration) => acc + duration, 0)
-      return durations.length > 0 ? total / durations.length : 0
+      const total = _tickDurationsWindow.aggregate
+      return _tickDurationsWindow.size() > 0 ? total / _tickDurationsWindow.size() : 0
     },
     enumerable: true,
   })
@@ -108,8 +161,8 @@ function TimingManager() {
    */
   Object.defineProperty(manager, 'lastTickTime', {
     get: () => {
-      const lastTime = _tickDurationsWindow.last()
-      return lastTime !== null ? lastTime : 0
+      const lastTime = _tickDurationsWindow.front()
+      return lastTime ? lastTime : 0
     },
     enumerable: true,
   })
@@ -136,6 +189,62 @@ function TimingManager() {
    */
   Object.defineProperty(manager, 'lastRun', {
     get: () => _lastRun,
+    enumerable: true,
+  })
+
+  /**
+   * The update rate of the engine in update per seconds.
+   * @name TimingManager#updateRate
+   * @type {number}
+   * @default 60
+   * @readonly
+   */
+  Object.defineProperty(manager, 'updateRate', {
+    get: () => _updateRate,
+    enumerable: true,
+  })
+
+  /**
+   * The real number of updates sent per second.
+   * @name TimingManager#updatePerSecond
+   * @type {number}
+   * @readonly
+   */
+  Object.defineProperty(manager, 'updatePerSecond', {
+    get: () => {
+      const nbUpdates = _updateDurationsWindow.length
+      return nbUpdates > 0 ? nbUpdates : 0
+    },
+  })
+
+  /**
+   * Mean time taken to process an update for the last second of updates.
+   *
+   */
+  Object.defineProperty(manager, 'meanUpdateTime', {
+    get: () => {
+      const total = _updateDurationsWindow.aggregate
+      return _updateDurationsWindow.size() > 0 ? total / _updateDurationsWindow.size() : 0
+    },
+    enumerable: true,
+  })
+
+  /**
+   * The time scale factor at which the engine is running.
+   * @name TimingManager#timeScaleFactor
+   * @type {number}
+   * @default 1
+   * @description
+   * The time scale factor is used to scale the delta time returned by the manager.
+   */
+  Object.defineProperty(manager, 'timeScaleFactor', {
+    get: () => _timeScaleFactor,
+    set: (value) => {
+      if (value < 1) {
+        throw new Error('Time scale factor must be greater than or equal to 1.')
+      }
+      _timeScaleFactor = value
+    },
     enumerable: true,
   })
 

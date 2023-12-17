@@ -52,6 +52,7 @@ describe('SimpleEngineController Tests', () => {
       await controller.init()
       await controller.setTask(taskId)
       await controller.setEntities(entities)
+      await controller.setTimeScaleFactor(1000)
       await controller.validate()
       await controller.start()
       await controller.stop()
@@ -65,6 +66,7 @@ describe('SimpleEngineController Tests', () => {
       expect(engineInfos).toHaveProperty('tickPerSecond', expect.any(Number))
       expect(engineInfos).toHaveProperty('meanTickTime', expect.any(Number))
       expect(engineInfos).toHaveProperty('tickCount', expect.any(Number))
+      expect(engineInfos).toHaveProperty('timeScaleFactor', 1000)
       // TOTO: be able to test the engineDataCallback
     })
   })
@@ -81,6 +83,7 @@ describe('SimpleEngineController Tests', () => {
       expect(() => controller.stop()).toThrow('Worker is terminated')
       expect(() => controller.setTask('exampleTask')).toThrow('Worker is terminated')
       expect(() => controller.setEntities([])).toThrow('Worker is terminated')
+      expect(() => controller.setTimeScaleFactor(1)).toThrow('Worker is terminated')
       expect(() => controller.getEngineInfos()).toThrow('Worker is terminated')
     })
   })

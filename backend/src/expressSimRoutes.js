@@ -3,12 +3,17 @@ import { ChannelRoomManager, DEFAULT_ROOM_ID } from './webSockets/udpSockets/Cha
 
 const router = express.Router()
 
+const getRoomContext = () => {
+  const roomContext = ChannelRoomManager().getRoomContext(DEFAULT_ROOM_ID)
+  if (!roomContext || !roomContext.engineController) {
+    throw new Error('Room context or engine controller not found')
+  }
+  return roomContext
+}
+
 router.post('/start', (req, res) => {
   try {
-    const roomContext = ChannelRoomManager().getRoomContext(DEFAULT_ROOM_ID)
-    if (!roomContext || !roomContext.engineController) {
-      throw new Error('Room context or engine controller not found')
-    }
+    const roomContext = getRoomContext()
     roomContext.engineController.start()
     res.send('Simulation started')
   } catch (error) {
@@ -18,14 +23,36 @@ router.post('/start', (req, res) => {
 
 router.post('/stop', (req, res) => {
   try {
-    const roomContext = ChannelRoomManager().getRoomContext(DEFAULT_ROOM_ID)
-    if (!roomContext || !roomContext.engineController) {
-      throw new Error('Room context or engine controller not found')
-    }
+    const roomContext = getRoomContext()
     roomContext.engineController.stop()
     res.send('Simulation stopped')
   } catch (error) {
     res.status(500).send(`Error stopping simulation: ${error.message}`)
+  }
+})
+
+import { loadNBodyFromJSON } from '#src/services/nbodyLoader.js'
+router.post('/restart', async (req, res) => {
+  try {
+    const roomContext = getRoomContext()
+    roomContext.engineController.stop()
+    const entities = await loadNBodyFromJSON('./data/planetsConfig.json')
+    await roomContext.engineController.setEntities(entities)
+    roomContext.engineController.start()
+    res.send('Simulation restarted')
+  } catch (error) {
+    res.status(500).send(`Error restarting simulation: ${error.message}`)
+  }
+})
+
+router.post('/setTimeScaleFactor', (req, res) => {
+  try {
+    const roomContext = getRoomContext()
+    const { timeScaleFactor } = req.body
+    roomContext.engineController.setTimeScaleFactor(timeScaleFactor)
+    res.send(`Time scale factor set to ${timeScaleFactor}`)
+  } catch (error) {
+    res.status(500).send(`Error setting time scale factor: ${error.message}`)
   }
 })
 

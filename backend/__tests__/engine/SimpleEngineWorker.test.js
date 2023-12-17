@@ -206,6 +206,55 @@ describe('SimpleEngineWorker tests', () => {
     })
   })
 
+  describe('setTimeScaleFactor command', () => {
+    test('should correctly set the time scale factor', async () => {
+      // INIT
+      await sendCommand('init')
+      const timeScaleFactor = 2
+
+      // RUN
+      const result = await sendCommand('setTimeScaleFactor', timeScaleFactor)
+
+      // CHECK RESULTS
+      expect(result).toEqual({
+        action: 'setTimeScaleFactor',
+        status: 'success',
+        data: null,
+      })
+    })
+
+    test('should throw error for engine not initialized', async () => {
+      // INIT
+      const timeScaleFactor = 2
+
+      // RUN
+      const result = await sendCommand('setTimeScaleFactor', timeScaleFactor)
+
+      // CHECK RESULTS
+      expect(result).toEqual({
+        action: 'setTimeScaleFactor',
+        error: 'You can not execute this command in the current state: uninitialized',
+        status: 'error',
+      })
+    })
+
+    test('should throw error for time scale factor inferior to 1', async () => {
+      // INIT
+      await sendCommand('init')
+      const timeScaleFactor = 0.5
+
+      // RUN
+      const result = await sendCommand('setTimeScaleFactor', timeScaleFactor)
+
+      // CHECK RESULTS
+      expect(result).toEqual({
+        action: 'setTimeScaleFactor',
+        error: 'Time scale factor must be greater than or equal to 1.',
+        status: 'error',
+      })
+    })
+  })
+
   describe('start command', () => {
     test('should correctly start the engine', async () => {
       // INIT
@@ -319,6 +368,10 @@ describe('SimpleEngineWorker tests', () => {
           tickPerSecond: 0,
           meanTickTime: 0,
           tickCount: 0,
+          timeScaleFactor: 1,
+          updateRate: 60,
+          updatePerSecond: 0,
+          meanUpdateTime: 0,
         },
       })
     })
@@ -385,6 +438,9 @@ describe('SimpleEngineWorker tests', () => {
       expect(result.data.tickPerSecond).toBeGreaterThan(1)
       expect(result.data.meanTickTime).toBeGreaterThan(1)
       expect(result.data.tickCount).toBeGreaterThan(1)
+      expect(result.data.updateRate).toBe(60)
+      expect(result.data.updatePerSecond).toBeGreaterThan(1)
+      expect(result.data.meanUpdateTime).toBeGreaterThan(1)
       expect(receivedData.length).toBeGreaterThan(1)
     })
   })
