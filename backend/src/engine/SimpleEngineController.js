@@ -62,7 +62,7 @@ const SimpleEngineController = async (worker) => {
    * Sends a command to the worker and returns a promise that resolves with the worker's response.
    * @param {string} command - The command to send to the worker.
    * @param {*} [data=null] - Additional data to send to the worker.
-   * @returns A promise resolving with the worker's response.
+   * @returns {Promise<Object>} A promise that resolves with the worker's response.
    * @throws {Error} If the worker is terminated.
    * @throws {Error} If the worker responds with an error.
    */
