@@ -44,12 +44,6 @@ const DataSender = (geckosInstance, roomId, sendRate) => {
   /****************************************
    *            PUBLIC PROPERTIES         *
    ****************************************/
-  /**
-   * Retrieves a copy of the current room-to-channels association data.
-   * @name ChannelRoomManager#roomsCopy
-   * @type {Map<string, string[]>}
-   * @readonly
-   */
 
   /**
    * Get the current transmission status of the sender.

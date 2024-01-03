@@ -1,10 +1,15 @@
 import express from 'express'
-import { ChannelRoomManager, DEFAULT_ROOM_ID } from './webSockets/udpSockets/ChannelRoomManager.js'
+import { RoomManager } from './webSockets/RoomManager.js'
+import { DEFAULT_ROOM_ID } from './webSockets/RoomManager.js'
 
 const router = express.Router()
+let stopCallback
+let setStopCallback = (callback) => {
+  stopCallback = callback
+}
 
 const getRoomContext = () => {
-  const roomContext = ChannelRoomManager().getRoomContext(DEFAULT_ROOM_ID)
+  const roomContext = RoomManager().getRoomContext(DEFAULT_ROOM_ID)
   if (!roomContext || !roomContext.engineController) {
     throw new Error('Room context or engine controller not found')
   }
@@ -22,13 +27,24 @@ router.post('/start', (req, res) => {
 })
 
 router.post('/stop', (req, res) => {
-  try {
-    const roomContext = getRoomContext()
-    roomContext.engineController.stop()
-    res.send('Simulation stopped')
-  } catch (error) {
-    res.status(500).send(`Error stopping simulation: ${error.message}`)
+  // try to call stopCallback, if it does not work then continue with the default behavior
+  if (stopCallback) {
+    try {
+      stopCallback()
+      res.send('Simulatio stop command sent with socket.io')
+      return
+    } catch (error) {
+      res.status(500).send(`Error stopping simulation with socket.io: ${error.message}`)
+      return
+    }
   }
+  // try {
+  //   const roomContext = getRoomContext()
+  //   roomContext.engineController.stop()
+  //   res.send('Simulation stopped')
+  // } catch (error) {
+  //   res.status(500).send(`Error stopping simulation: ${error.message}`)
+  // }
 })
 
 import { loadNBodyFromJSON } from '#src/services/nbodyLoader.js'
@@ -67,4 +83,4 @@ router.post('/setDt', (req, res) => {
   }
 })
 
-export { router as expressSimRoutes }
+export { router as expressSimRoutes, setStopCallback }
