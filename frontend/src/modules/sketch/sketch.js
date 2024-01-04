@@ -4,7 +4,9 @@ import planetsConfig from './config/planetsConfig.json'
 import engineConfig from './config/engineConfig.json'
 import PathRenderer from './pathRenderer'
 import CircleRenderer from './circleRenderer'
-import PositionSimulator from './PositionSimulator'
+
+import { SocketConnectionManager } from '../webSockets/tcpSockets/SocketConnectionManager'
+import { ChannelConnectionManager } from '../webSockets/udpSockets/ChannelConnectionManager'
 
 /**
  * Creates an array of NBody instances based on the provided configuration.
@@ -95,21 +97,30 @@ const runSimulator = async (simulator) => {
   }
 
   simulator.addObjects(Fps())
-  const positionSimulator = new PositionSimulator()
 
   simulator.setEngineConfig(getEngineConfigurator(engineConfig))
 
   const planets = createPlanetsFromConfig(planetsConfig)
   for (const planet of planets) {
     simulator.addObjects(planet)
-    positionSimulator.registerPlanet(planet.name, planet.setPosition.bind(planet))
-
-    // Load positions data using the separated function and then set it in the simulator
-    // const positionsData = await loadPositionsData(planet.name)
-    // positionSimulator.setPositionsData(planet.name, positionsData)
   }
 
-  positionSimulator.startLoop(120)
+  // setup geckos and socket and data receiving
+  const socketConnectionManager = SocketConnectionManager()
+  const channelConnectionManager = ChannelConnectionManager()
+  channelConnectionManager.setDataCallback((data) => {
+    data.map((obj) => {
+      const id = Object.keys(obj)[0] // Get the id (planet name)
+      const pos = obj[id] // Get the position object
+      planets.find((planet) => planet.name === id).setPosition(pos.x, pos.y)
+    })
+  })
+  channelConnectionManager.connect()
+  channelConnectionManager.setConnectionListener((id) => {
+    console.log('trying to bind channel')
+    socketConnectionManager.connect()
+    socketConnectionManager.bindChannelId(id)
+  })
 }
 
 /**
