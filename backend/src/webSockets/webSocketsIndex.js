@@ -7,6 +7,7 @@ import { RoomManager } from './RoomManager.js'
 import { setupRoom } from '#src/simulationConfig.js'
 import { CommandProcessor, COMMAND_SETS } from './tcpSockets/CommandProcessor.js'
 import { ResponseProcessor } from './tcpSockets/ReponseProcessor.js'
+import { setupSessionEvents } from './tcpSockets/setupSessionEvents.js'
 
 const webSocketsStart = (httpServer) => {
   const socketServer = SocketServer(httpServer)
@@ -20,8 +21,13 @@ const webSocketsStart = (httpServer) => {
   const processCommand = CommandProcessor(roomManager, COMMAND_SETS)
   const processResponse = ResponseProcessor()
   // Register connection callback
+  channelConnectionManager.onConnect(() => {
+    //TODO
+  })
   socketConnectionManager.onConnect((socketId) => {
     const socket = socketServer.sockets.sockets.get(socketId)
+
+    setupSessionEvents(socket, socketChannelManager, geckosServer) // TODO: rework this
 
     socket.on('command', (message) => {
       const userIds = socketChannelManager.getIds(socketId)
@@ -41,7 +47,7 @@ const webSocketsStart = (httpServer) => {
     })
   })
 
-  setupRoom(roomManager, channelConnectionManager, socketConnectionManager, socketChannelManager)
+  setupRoom(roomManager)
 }
 
 export { webSocketsStart }
