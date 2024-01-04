@@ -22,7 +22,7 @@ const ResponseProcessor = () => {
    */
   return ({ action, status, data }) => {
     // Stop implementation, more general implementation will be done later
-    if (action !== 'stop') {
+    if (action !== 'stop' && action !== 'start') {
       throw new Error(`Unsupported action: ${action}`)
     }
 
@@ -40,7 +40,10 @@ const ResponseProcessor = () => {
 
     // determine the message
     // for the moment i don't know and stop does not return anything
-    let message = data
+    let message = {
+      action,
+      data,
+    }
 
     return { eventName, message, to }
   }

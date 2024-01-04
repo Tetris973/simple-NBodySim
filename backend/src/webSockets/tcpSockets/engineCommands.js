@@ -22,6 +22,16 @@ const engineCommands = {
       .then((data) => ({ action: 'stop', status: 'success', data }))
       .catch((error) => ({ action: 'stop', status: 'error', error: error.message }))
   },
+  start: (context) => {
+    if (!context.roomContext) {
+      return Promise.reject(new Error('Missing roomContext in context for "start" command'))
+    }
+    return context.roomContext.engineController
+      .start()
+      .then((data) => ({ action: 'start', status: 'success', data }))
+      .catch((error) => ({ action: 'start', status: 'error', error: error.message }))
+  },
+
   // Other commands...
 }
 
