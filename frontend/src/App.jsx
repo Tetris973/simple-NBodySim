@@ -2,6 +2,10 @@ import { useEffect } from 'react'
 import './App.css'
 import start from './modules/sketch/sketch'
 import { StartStopButton } from './StartStopButton'
+import { RestartButton } from './RestartButton'
+import { DtComponent } from './DtComponent'
+import { TimeScaleComponent } from './TimeScaleComponent'
+
 import { GeckosClient } from './modules/webSockets/udpSockets/GeckosClient'
 import { ChannelConnectionManager } from './modules/webSockets/udpSockets/ChannelConnectionManager'
 import { SocketClient } from './modules/webSockets/tcpSockets/SocketClient'
@@ -22,6 +26,9 @@ function App() {
   return (
     <>
       <StartStopButton />
+      <RestartButton />
+      <DtComponent />
+      <TimeScaleComponent />
       <div id="simulationContent"></div>
     </>
   )

@@ -38,6 +38,23 @@ function createPlanetsFromConfig(configs) {
   })
 }
 
+let plotter = null
+function handleMouseWheel(event) {
+  if (!plotter) return
+  // You can use event.deltaY to get the amount and direction of the scroll
+  if (event.deltaY < 0) {
+    plotter.scale.x *= 1.02
+    plotter.scale.y *= 1.02
+  } else {
+    plotter.scale.x *= 0.98
+    plotter.scale.y *= 0.98
+  }
+  // Prevent the default scrolling behavior
+  event.preventDefault()
+}
+// Add the event listener to the window object
+window.addEventListener('wheel', handleMouseWheel)
+
 /**
  * Returns a function that configures the engine based on the provided configuration.
  *
@@ -61,6 +78,9 @@ function getEngineConfigurator(config) {
     engine.plotter.backgroundColor = config.plotter.backgroundColor
     engine.runner.simulationSpeed = config.runner.simulationSpeed
     engine.runner.movable = config.runner.movable
+
+    // to manipulate scale
+    plotter = engine.plotter
   }
 }
 
@@ -85,7 +105,7 @@ const runSimulator = async (simulator) => {
       draw: () => {
         fill(255)
         stroke(0)
-        text('FPS: ' + currentFps.toFixed(2), 50, 50)
+        text('FPS: ' + currentFps.toFixed(2), 20, 20)
 
         if (!update) return
         currentFps = frameRate()

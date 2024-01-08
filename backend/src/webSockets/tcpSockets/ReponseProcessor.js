@@ -22,7 +22,14 @@ const ResponseProcessor = () => {
    */
   return ({ action, status, data }) => {
     // Stop implementation, more general implementation will be done later
-    if (action !== 'stop' && action !== 'start') {
+    if (
+      action !== 'stop' &&
+      action !== 'start' &&
+      action !== 'restart' &&
+      action !== 'setDt' &&
+      action !== 'setTimeScale' &&
+      action !== 'getInfos'
+    ) {
       throw new Error(`Unsupported action: ${action}`)
     }
 

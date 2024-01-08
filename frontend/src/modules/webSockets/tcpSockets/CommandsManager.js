@@ -45,6 +45,66 @@ const _CommandsManager = (socketClient) => {
     })
   }
 
+  manager.restartSimulation = () => {
+    _socket.emit('command', {
+      category: 'engine',
+      command: 'restart',
+      data: {},
+    })
+  }
+  manager.onRestartSimulation = (callback) => {
+    _socket.on('commandSuccess', (message) => {
+      if (message.action === 'restart') {
+        callback()
+      }
+    })
+  }
+
+  manager.setDt = (dt) => {
+    _socket.emit('command', {
+      category: 'engine',
+      command: 'setDt',
+      data: dt,
+    })
+  }
+  manager.onSetDt = (callback) => {
+    _socket.on('commandSuccess', (message) => {
+      if (message.action === 'setDt') {
+        callback(message.data.dt)
+      }
+    })
+  }
+
+  manager.setTimeScale = (timeScale) => {
+    _socket.emit('command', {
+      category: 'engine',
+      command: 'setTimeScale',
+      data: timeScale,
+    })
+  }
+  manager.onSetTimeScale = (callback) => {
+    _socket.on('commandSuccess', (message) => {
+      if (message.action === 'setTimeScale') {
+        callback(message.data.timeScale)
+      }
+    })
+  }
+
+  manager.getEngineInfos = () => {
+    _socket.emit('command', {
+      category: 'engine',
+      command: 'getInfos',
+      data: {},
+    })
+  }
+  manager.onGetEnginInfos = (callback) => {
+    _socket.on('commandSuccess', (message) => {
+      if (message.action === 'getInfos') {
+        callback(message.data)
+      }
+    })
+  }
+
   return manager
 }
 

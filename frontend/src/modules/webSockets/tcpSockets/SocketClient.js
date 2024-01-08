@@ -4,7 +4,7 @@ let socketInstance = null
 
 const SocketClient = () => {
   if (!socketInstance) {
-    socketInstance = io(`http://localhost:${3000}`, { autoConnect: false })
+    socketInstance = io({ autoConnect: false })
   }
   return socketInstance
 }
